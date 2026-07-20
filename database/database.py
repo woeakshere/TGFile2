@@ -28,6 +28,8 @@ default_settings = {
     'button_url': ''
 }
 
+credits_collection = database['credits']
+
 def new_user(id):
     return {
         '_id': id,
@@ -105,3 +107,24 @@ async def set_link_disabled(code: str, disabled: bool):
 
 async def delete_link(code: str):
     await links_collection.delete_one({'code': code})
+
+async def get_credits_used(user_id: int):
+    doc = await credits_collection.find_one({'_id': user_id})
+    return doc.get('count', 0) if doc else 0
+
+async def increment_credits_used(user_id: int):
+    await credits_collection.update_one(
+        {'_id': user_id},
+        {'$inc': {'count': 1}},
+        upsert=True
+    )
+
+async def reset_credits(user_id: int):
+    await credits_collection.delete_one({'_id': user_id})
+
+async def is_user_in_db(user_id: int):
+    return bool(await credits_collection.find_one({'_id': user_id}))
+
+async def bump_link_hits(code: str):
+    await links_collection.update_one({'code': code}, {'$inc': {'hits': 1}})
+    
