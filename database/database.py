@@ -104,3 +104,4 @@ async def set_link_disabled(code: str, disabled: bool):
 
 async def delete_link(code: str):
     await links_collection.delete_one({'code': code})
+    
