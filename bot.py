@@ -6,16 +6,12 @@ from pyrogram import Client
 from pyrogram.enums import ParseMode
 import sys
 from datetime import datetime
-#rohit_1888 on Tg
 from config import *
-# Import keep_alive module for preventing instance sleep
 from keep_alive import start_keep_alive_thread
-
 
 name ="""
  BY CODEFLIX BOTS
 """
-
 
 class Bot(Client):
     def __init__(self):
@@ -103,7 +99,6 @@ class Bot(Client):
         self.LOGGER(__name__).info(f"Bot Running..!\n\nCreated by \nhttps://t.me/weebs_support")
         self.LOGGER(__name__).info(f"""       
 
-
   ___ ___  ___  ___ ___ _    _____  _____  ___ _____ ___ 
  / __/ _ \|   \| __| __| |  |_ _\ \/ / _ )/ _ \_   _/ __|
 | (_| (_) | |) | _|| _|| |__ | | >  <| _ \ (_) || | \__ \
@@ -116,12 +111,10 @@ class Bot(Client):
         self.username = usr_bot_me.username
         self.LOGGER(__name__).info(f"Bot Running..! Made by @wleaksOwner")   
 
-        # Start Web Server
         app = web.AppRunner(await web_server())
         await app.setup()
         await web.TCPSite(app, "0.0.0.0", PORT).start()
 
-        # Start keep-alive thread to prevent Koyeb instance from sleeping
         self.LOGGER(__name__).info("Starting keep-alive mechanism to prevent instance sleep")
         start_keep_alive_thread()
         self.LOGGER(__name__).info("Keep-alive mechanism started successfully")
@@ -134,7 +127,6 @@ class Bot(Client):
         self.LOGGER(__name__).info("Bot stopped.")
 
     def run(self):
-        """Run the bot."""
         loop = asyncio.get_event_loop()
         loop.run_until_complete(self.start())
         self.LOGGER(__name__).info("Bot is now running. Thanks to @Aryanwadhonkar")
@@ -144,12 +136,3 @@ class Bot(Client):
             self.LOGGER(__name__).info("Shutting down...")
         finally:
             loop.run_until_complete(self.stop())
-
-#
-# Copyright (C) 2025 by Codeflix-Bots@Github, < https://github.com/Codeflix-Bots >.
-#
-# This file is part of < https://github.com/Codeflix-Bots/FileStore > project,
-# and is released under the MIT License.
-# Please see < https://github.com/Codeflix-Bots/FileStore/blob/master/LICENSE >
-#
-# All rights reserved.
