@@ -18,8 +18,6 @@ FORCE_SUB_CHANNEL2 = int(os.environ.get("FORCE_SUB_CHANNEL2", "0"))
 FORCE_SUB_CHANNEL3 = int(os.environ.get("FORCE_SUB_CHANNEL3", "0"))
 FORCE_SUB_CHANNEL4 = int(os.environ.get("FORCE_SUB_CHANNEL4", "0"))
 TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "50"))
-START_PIC = os.environ.get("START_PIC", "https://pasteboard.co/AbodV9CanoGz.jpg")
-FORCE_PIC = os.environ.get("FORCE_PIC", "https://pasteboard.co/AbodV9CanoGz.jpg")
 TOKEN = True if os.environ.get('TOKEN', "True") == "True" else False
 SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "seturl.in")
 SHORTLINK_API = os.environ.get("SHORTLINK_API", "9a256c2ecb6c16539243b96e410602df1e1d3674")
