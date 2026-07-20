@@ -1,15 +1,3 @@
-# Don't Remove Credit @CodeFlix_Bots, @rohit_1888
-# Ask Doubt on telegram @CodeflixSupport
-#
-# Copyright (C) 2025 by Codeflix-Bots@Github, < https://github.com/Codeflix-Bots >.
-#
-# This file is part of < https://github.com/Codeflix-Bots/FileStore > project,
-# and is released under the MIT License.
-# Please see < https://github.com/Codeflix-Bots/FileStore/blob/master/LICENSE >
-#
-# All rights reserved.
-#
-
 import asyncio
 import os
 import random
@@ -27,9 +15,10 @@ from config import *
 from helper_func import *
 from database.database import *
 
-# File auto-delete time in seconds (Set your desired time in seconds here)
-FILE_AUTO_DELETE = TIME  # Example: 3600 seconds (1 hour)
+FILE_AUTO_DELETE = TIME
 TUT_VID = f"{TUT_VID}"
+DEFAULT_BANNER = "https://pasteboard.co/AbodV9CanoGz.jpg"
+DEFAULT_FORCE_PIC = "https://pasteboard.co/AbodV9CanoGz.jpg"
 
 @Bot.on_message(filters.command('start') & filters.private & subscribed1 & subscribed2 & subscribed3 & subscribed4)
 async def start_command(client: Client, message: Message):
@@ -51,8 +40,6 @@ async def start_command(client: Client, message: Message):
     FREE_CREDITS = settings['free_credits']
     TOKEN_DURATION = settings['token_duration']
 
-    # use_credit tracks whether this request is being covered by a free credit
-    # (so we know to increment the counter once the files are actually sent)
     is_admin = id in ADMINS
     use_credit = False
 
@@ -66,13 +53,11 @@ async def start_command(client: Client, message: Message):
     else:
         verify_status = await get_verify_status(id)
 
-        # Expire an old token and reset credits for the new cycle
         if verify_status['is_verified'] and TOKEN_DURATION < (time.time() - verify_status['verified_time']):
             await update_verify_status(id, is_verified=False)
             await reset_credits(id)
             verify_status['is_verified'] = False
 
-        # Handle the ad-link callback: /start verify_<token>
         if "verify_" in message.text:
             _, token = message.text.split("_", 1)
             if verify_status['verify_token'] != token:
@@ -104,7 +89,6 @@ async def start_command(client: Client, message: Message):
                     quote=True
                 )
 
-    # Handle normal message flow
     text = message.text
     if len(text) > 7:
         try:
@@ -113,7 +97,7 @@ async def start_command(client: Client, message: Message):
             return
 
         link_record = await get_link(base64_string)
-        if link_record and link_record.get('disabled'):
+        if link_record and link_record.get('disabled', False) is True:
             return await message.reply_text("<b>This link has been disabled by the admin.</b>", quote=True)
 
         string = await decode(base64_string)
@@ -176,23 +160,19 @@ async def start_command(client: Client, message: Message):
                     except Exception as e:
                         print(f"Error deleting message {snt_msg.id}: {e}")
 
-            # Just clean up the "will be deleted" notice — no "get it again" prompt.
-            # Repeated re-requests of the same file were causing FloodWait storms.
             try:
                 await notification_msg.delete()
             except Exception:
                 pass
     else:
-        banner = settings['banner'] or START_PIC
+        banner = settings['banner'] if settings['banner'] else DEFAULT_BANNER
         reply_markup = InlineKeyboardMarkup(
             [
-                    [InlineKeyboardButton("• ᴍᴏʀᴇ ᴄʜᴀɴɴᴇʟs •", url="https://linkfly.to/wleaks")],
-
-    [
-                    InlineKeyboardButton("• ᴀʙᴏᴜᴛ", callback_data = "about"),
-                    InlineKeyboardButton('ʜᴇʟᴘ •', callback_data = "help")
-
-    ]
+                [InlineKeyboardButton("• ᴍᴏʀᴇ ᴄʜᴀɴɴᴇʟs •", url="https://linkfly.to/wleaks")],
+                [
+                    InlineKeyboardButton("• ᴀʙᴏᴜᴛ", callback_data="about"),
+                    InlineKeyboardButton('ʜᴇʟᴘ •', callback_data="help")
+                ]
             ]
         )
         await message.reply_photo(
@@ -208,52 +188,38 @@ async def start_command(client: Client, message: Message):
         )
         return
 
-
-
-#=====================================================================================##
-# Don't Remove Credit @CodeFlix_Bots, @rohit_1888
-# Ask Doubt on telegram @CodeflixSupport
-
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
-    # Initialize buttons list
     buttons = []
 
-    # Check if the first and second channels are both set
     if FORCE_SUB_CHANNEL1 and FORCE_SUB_CHANNEL2:
         buttons.append([
             InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ", url=client.invitelink1),
             InlineKeyboardButton(text="ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink2),
         ])
-    # Check if only the first channel is set
     elif FORCE_SUB_CHANNEL1:
         buttons.append([
             InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ•", url=client.invitelink1)
         ])
-    # Check if only the second channel is set
     elif FORCE_SUB_CHANNEL2:
         buttons.append([
             InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ•", url=client.invitelink2)
         ])
 
-    # Check if the third and fourth channels are set
     if FORCE_SUB_CHANNEL3 and FORCE_SUB_CHANNEL4:
         buttons.append([
             InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ", url=client.invitelink3),
             InlineKeyboardButton(text="ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ •", url=client.invitelink4),
         ])
-    # Check if only the first channel is set
     elif FORCE_SUB_CHANNEL3:
         buttons.append([
             InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ•", url=client.invitelink3)
         ])
-    # Check if only the second channel is set
     elif FORCE_SUB_CHANNEL4:
         buttons.append([
             InlineKeyboardButton(text="• ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ•", url=client.invitelink4)
         ])
 
-    # Append "Try Again" button if the command has a second argument
     try:
         buttons.append([
             InlineKeyboardButton(
@@ -262,10 +228,10 @@ async def not_joined(client: Client, message: Message):
             )
         ])
     except IndexError:
-        pass  # Ignore if no second argument is present
+        pass
 
     await message.reply_photo(
-        photo=FORCE_PIC,
+        photo=DEFAULT_FORCE_PIC,
         caption=FORCE_MSG.format(
         first=message.from_user.first_name,
         last=message.from_user.last_name,
@@ -276,15 +242,9 @@ async def not_joined(client: Client, message: Message):
     reply_markup=InlineKeyboardMarkup(buttons)
 )
 
-
-#=====================================================================================##
-
 WAIT_MSG = "<b>Working....</b>"
 
 REPLY_ERROR = "<code>Use this command as a reply to any telegram message without any spaces.</code>"
-
-#=====================================================================================##
-
 
 @Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
 async def get_users(client: Bot, message: Message):
@@ -301,7 +261,7 @@ async def send_text(client: Bot, message: Message):
         pls_wait = await message.reply("<i>ʙʀᴏᴀᴅᴄᴀꜱᴛ ᴘʀᴏᴄᴇꜱꜱɪɴɢ....</i>")
         stats = await broadcast_messages(query, broadcast_msg)
 
-        status = f"""<b><u>ʙʀᴏᴀᴅᴄᴀꜱᴛ...</u>
+        status = f"""<b>ʙʀᴏᴀᴅᴄᴀꜱᴛ...
 
 Total Users: <code>{stats['total']}</code>
 Successful: <code>{stats['successful']}</code>
@@ -316,13 +276,11 @@ Unsuccessful: <code>{stats['unsuccessful']}</code></b>"""
         await asyncio.sleep(8)
         await msg.delete()
 
-# broadcast with auto-del
-
 @Bot.on_message(filters.private & filters.command('dbroadcast') & filters.user(ADMINS))
 async def delete_broadcast(client: Bot, message: Message):
     if message.reply_to_message:
         try:
-            duration = int(message.command[1])  # Get the duration in seconds
+            duration = int(message.command[1])
         except (IndexError, ValueError):
             await message.reply("<b>Please provide a valid duration in seconds.</b> Usage: /dbroadcast {duration}")
             return
@@ -333,7 +291,7 @@ async def delete_broadcast(client: Bot, message: Message):
         pls_wait = await message.reply("<i>Broadcast with auto-delete processing....</i>")
         stats = await broadcast_messages(query, broadcast_msg, delete_after=duration)
 
-        status = f"""<b><u>Broadcast with Auto-Delete...</u>
+        status = f"""<b>Broadcast with Auto-Delete...
 
 Total Users: <code>{stats['total']}</code>
 Successful: <code>{stats['successful']}</code>
@@ -347,3 +305,4 @@ Unsuccessful: <code>{stats['unsuccessful']}</code></b>"""
         msg = await message.reply("Please reply to a message to broadcast it with auto-delete.")
         await asyncio.sleep(8)
         await msg.delete()
+            
