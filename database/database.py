@@ -88,11 +88,12 @@ async def is_banned(user_id: int):
 async def get_link(code: str):
     return await links_collection.find_one({'code': code})
 
-async def save_link(code: str, ids: list, disabled: bool = False):
+async def save_link(code: str, ids: list, user_id: int):
     await links_collection.insert_one({
         'code': code,
         'ids': ids,
-        'disabled': disabled,
+        'user_id': user_id,
+        'disabled': False,
         'hits': 0
     })
 
@@ -104,4 +105,3 @@ async def set_link_disabled(code: str, disabled: bool):
 
 async def delete_link(code: str):
     await links_collection.delete_one({'code': code})
-    
