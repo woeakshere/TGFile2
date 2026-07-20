@@ -6,12 +6,26 @@ dbclient = motor.motor_asyncio.AsyncIOMotorClient(DB_URI)
 database = dbclient[DB_NAME]
 
 user_data = database['users']
+settings = database['settings']
+banned_users = database['banned_users']
+links_collection = database['links']
 
 default_verify = {
     'is_verified': False,
     'verified_time': 0,
     'verify_token': "",
     'link': ""
+}
+
+default_settings = {
+    'header': '',
+    'footer': '',
+    'banner': '',
+    'free_credits': 1,
+    'token_duration': 86400,
+    'button_enabled': False,
+    'button_text': '',
+    'button_url': ''
 }
 
 def new_user(id):
@@ -51,3 +65,42 @@ async def full_userbase():
 async def del_user(user_id: int):
     await user_data.delete_one({'_id': user_id})
     return
+
+async def get_settings():
+    doc = await settings.find_one({'_id': 'default'})
+    if not doc:
+        await settings.insert_one({'_id': 'default', **default_settings})
+        doc = default_settings
+    return doc
+
+async def update_settings(**kwargs):
+    await settings.update_one({'_id': 'default'}, {'$set': kwargs}, upsert=True)
+
+async def ban_user(user_id: int):
+    await banned_users.insert_one({'_id': user_id})
+
+async def unban_user(user_id: int):
+    await banned_users.delete_one({'_id': user_id})
+
+async def is_banned(user_id: int):
+    return bool(await banned_users.find_one({'_id': user_id}))
+
+async def get_link(code: str):
+    return await links_collection.find_one({'code': code})
+
+async def save_link(code: str, ids: list, disabled: bool = False):
+    await links_collection.insert_one({
+        'code': code,
+        'ids': ids,
+        'disabled': disabled,
+        'hits': 0
+    })
+
+async def increment_link_hits(code: str):
+    await links_collection.update_one({'code': code}, {'$inc': {'hits': 1}})
+
+async def set_link_disabled(code: str, disabled: bool):
+    await links_collection.update_one({'code': code}, {'$set': {'disabled': disabled}})
+
+async def delete_link(code: str):
+    await links_collection.delete_one({'code': code})
