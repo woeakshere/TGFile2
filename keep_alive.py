@@ -56,3 +56,4 @@ def start_keep_alive_thread():
 if __name__ == "__main__":
     logging.info("Keep-alive script started in standalone mode")
     keep_alive_loop()
+        
