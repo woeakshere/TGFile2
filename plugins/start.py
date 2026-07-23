@@ -97,7 +97,11 @@ async def start_command(client: Client, message: Message):
             return
 
         link_record = await get_link(base64_string)
-        if link_record and link_record.get('disabled', False) is True:
+
+        if not link_record:
+            return await message.reply_text("<b>This link is invalid or has been deleted.</b>", quote=True)
+
+        if link_record.get("disabled", False):
             return await message.reply_text("<b>This link has been disabled by the admin.</b>", quote=True)
 
         string = await decode(base64_string)
@@ -144,7 +148,7 @@ async def start_command(client: Client, message: Message):
         )
 
         if use_credit:
-            await increment_credits(id)
+            await increment_credits_used(id)
 
         if FILE_AUTO_DELETE > 0:
             notification_msg = await message.reply(
@@ -306,4 +310,3 @@ Unsuccessful: <code>{stats['unsuccessful']}</code></b>"""
         await asyncio.sleep(8)
         await msg.delete()
 
-            
