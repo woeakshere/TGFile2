@@ -127,4 +127,4 @@ async def is_user_in_db(user_id: int):
 
 async def bump_link_hits(code: str):
     await links_collection.update_one({'code': code}, {'$inc': {'hits': 1}})
-    
+
